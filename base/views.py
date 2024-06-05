@@ -2,10 +2,41 @@ from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import GenericAPIView
 from .models import Product, ProductCategory
-from .serializers import ProductSerializer, ProductCategorySerializer
+from .serializers import ProductSerializer, ProductCategorySerializer, UserSerializer
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
+from rest_framework.authtoken.models import Token
 
 # Create your views here.
+@api_view(['POST'])
+def login(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    user = authenticate(username=email,password=password)
+
+    if user == None:
+        return Response('Invalid credentials!')
+    else:
+        token,_ = Token.objects.get_or_create(user=user)
+        return Response(token.key)
+        
+
+@api_view(['POST'])
+def register(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        password = request.data.get('password')
+        hash_password = make_password(password)
+        a = serializer.save()
+        a.password = hash_password
+        a.save()
+        return Response('User created!')
+    else:
+        return Response(serializer.errors)
+
 class ProductApiView(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer

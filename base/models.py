@@ -6,8 +6,8 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=300)
     username = models.CharField(max_length=300,default='username')
-    phone_no = models.IntegerField()
-    address = models.CharField(max_length=300)
+    phone_no = models.IntegerField(null=True)
+    address = models.CharField(max_length=300,null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username','phone_no','address']
