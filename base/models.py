@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import Group
 
 # Create your models here.
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=300)
+    groups = models.ManyToManyField(Group)
     username = models.CharField(max_length=300,default='username')
     phone_no = models.IntegerField(null=True)
     address = models.CharField(max_length=300,null=True)
